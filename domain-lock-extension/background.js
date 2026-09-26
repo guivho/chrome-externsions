@@ -1,4 +1,3 @@
-const lockedTabs = new Map();
 const DEFAULT_DOMAINS = ["mail.google.com", "web.whatsapp.com"];
 
 function getOrigin(url) {
@@ -10,39 +9,35 @@ function getOrigin(url) {
   }
 }
 
-// Onderschep navigatie
+// Luister direct naar navigaties
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
+  // Alleen het hoofdframe (niet iframes)
   if (details.frameId !== 0) return;
 
-  const tabId = details.tabId;
-  const targetOrigin = getOrigin(details.url);
+  try {
+    // Haal de HUIDIGE status van de tab op voordat hij navigeert
+    const tab = await chrome.tabs.get(details.tabId);
+    if (!tab || !tab.url) return;
 
-  if (lockedTabs.has(tabId)) {
-    const allowedOrigin = lockedTabs.get(tabId);
+    const currentOrigin = getOrigin(tab.url);
+    const targetOrigin = getOrigin(details.url);
 
-    if (targetOrigin && targetOrigin !== allowedOrigin) {
-      chrome.tabs.create({ url: details.url, active: true });
-      chrome.tabs.update(tabId, { url: allowedOrigin });
+    // Als de huidige pagina al een beschermd domein is...
+    if (currentOrigin) {
+      const data = await chrome.storage.sync.get({ protectedDomains: DEFAULT_DOMAINS });
+      const isCurrentProtected = data.protectedDomains.some(domain => currentOrigin.includes(domain));
+
+      // ...en de NIEUWE pagina gaat naar een ANDER domein:
+      if (isCurrentProtected && targetOrigin && targetOrigin !== currentOrigin) {
+
+        // 1. Open de aangeklikte bookmark/URL direct in een nieuw tabblad
+        chrome.tabs.create({ url: details.url, active: true });
+
+        // 2. Houd de huidige tab geforceerd op z'n eigen domein
+        chrome.tabs.update(details.tabId, { url: tab.url });
+      }
     }
+  } catch (e) {
+    // Tab bestaat mogelijk niet meer of is een interne chrome:// pagina
   }
-});
-
-// Controleer geladen tabs tegen de opgeslagen domeinlijst
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    const origin = getOrigin(tab.url);
-
-    if (origin) {
-      chrome.storage.sync.get({ protectedDomains: DEFAULT_DOMAINS }, (data) => {
-        const isProtected = data.protectedDomains.some(domain => origin.includes(domain));
-        if (isProtected) {
-          lockedTabs.set(tabId, origin);
-        }
-      });
-    }
-  }
-});
-
-chrome.tabs.onRemoved.addListener((tabId) => {
-  lockedTabs.delete(tabId);
 });
