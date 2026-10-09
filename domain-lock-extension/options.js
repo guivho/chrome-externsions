@@ -1,8 +1,11 @@
-const defaultDomains = ["mail.google.com", "web.whatsapp.com"];
+const defaultDomains = ["mail.google.com"];
 
 // Laad en toon de huidige lijst
 function loadDomains() {
   chrome.storage.sync.get({ protectedDomains: defaultDomains }, (data) => {
+    // Sla de standaardlijst meteen op als de opslag nog leeg was
+    chrome.storage.sync.set({ protectedDomains: data.protectedDomains });
+
     const list = document.getElementById("domainList");
     list.innerHTML = "";
 
@@ -11,7 +14,7 @@ function loadDomains() {
       li.textContent = domain;
 
       const delBtn = document.createElement("button");
-      delBtn.textContent = "Verwijderen";
+      delBtn.textContent = "Remove";
       delBtn.className = "btn-del";
       delBtn.onclick = () => removeDomain(domain);
 
@@ -52,5 +55,10 @@ function removeDomain(domainToRemove) {
     });
   });
 }
+
+// Open de optiepagina wanneer de gebruiker op het extensie-icoon klikt
+chrome.action.onClicked.addListener(() => {
+  chrome.runtime.openOptionsPage();
+});
 
 document.addEventListener("DOMContentLoaded", loadDomains);

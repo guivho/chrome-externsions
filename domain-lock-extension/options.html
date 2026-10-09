@@ -2,29 +2,36 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Domain Lock Opties</title>
+  <title>Domain Lock Options</title>
   <style>
-    body { font-family: system-ui, sans-serif; padding: 20px; max-width: 450px; background: #f9f9f9; color: #333; }
-    h2 { margin-top: 0; font-size: 1.2rem; }
+    body { font-family: system-ui, sans-serif; padding: 20px; max-width: 480px; background: #f9f9f9; color: #333; line-height: 1.5; }
+    h2 { margin-top: 0; font-size: 1.3rem; }
+    h3 { margin-top: 20px; font-size: 1.1rem; }
+    .intro { color: #555; font-size: 0.92rem; margin-bottom: 20px; }
     .input-group { display: flex; gap: 8px; margin-bottom: 15px; }
-    input[type="text"] { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-    button { padding: 8px 14px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    input[type="text"] { flex: 1; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+    button { padding: 8px 14px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
     button:hover { background: #0052a3; }
     ul { list-style: none; padding: 0; margin: 0; }
-    li { display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; margin-bottom: 6px; border: 1px solid #ddd; border-radius: 4px; }
+    li { display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; margin-bottom: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem; }
     .btn-del { background: #dc3545; padding: 4px 8px; font-size: 0.8rem; }
     .btn-del:hover { background: #bd2130; }
   </style>
 </head>
 <body>
-  <h2>Beschermde Domeinen</h2>
-
-  <div class="input-group">
-    <input type="text" id="domainInput" placeholder="bijv. mail.google.com">
-    <button id="addBtn">Toevoegen</button>
+  <h2>Domain Lock Extension</h2>
+  <div class="intro">
+    <p>Web applications like Gmail preserve their tab when clicking internal links, but bookmarks or manually typed URLs will still overwrite it.</p>
+    <p><strong>Domain Lock</strong> restricts designated tabs strictly to their original domain. Any attempt to navigate away to a different domain will automatically open in a new tab.</p>
   </div>
 
+  <h3>Protected Domains</h3>
   <ul id="domainList"></ul>
+
+  <div class="input-group">
+    <input type="text" id="domainInput" placeholder="e.g. mail.google.com" autocomplete="off" spellcheck="false">
+    <button id="addBtn">Add</button>
+  </div>
 
   <script src="options.js"></script>
 </body>
