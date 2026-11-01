@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Domain Lock for Tabs",
-  "version": "1.5",
+  "version": "1.5.1",
   "description": "Protects specific tabs from navigation to another domain.",
   "permissions": [
     "tabs",
